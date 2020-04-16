@@ -19,7 +19,9 @@ Breaking the node will drop any cobble it was storing.
 
 The recipe for a mk1 generator varies if pipeworks node breaker or mesecons node detector are installed.
 
-| steel ingot  | steel pick *or* node breaker   | steel_ingot |
+|              |                                |             |
+|--------------|--------------------------------|-------------|
+| steel ingot  | steel pick *or* node breaker   | steel ingot |
 | water bucket | stone                          | lava bucket |
 | steel ingot  | steel block *or* node detector | steel ingot |
 
