@@ -1,7 +1,10 @@
 cobble_generator = {}
 local MP = minetest.get_modpath("cobble_generator").."/"
 
-local output = {1, 2, 4, 8, 16, 32} -- quantity per interval per tier
+local string_format = string.format
+
+local output_item = "default:cobble"
+local output_quantity = {1, 2, 4, 8, 16, 32} -- quantity per interval per tier
 local interval = 3 -- seconds
 
 
@@ -43,11 +46,12 @@ local flush = function(inv, stack, pos, put_pos, put_side, put_dir)
 end
 
 local set_state = function(pos, meta, timer, active)
+	local output_item_description = ItemStack(output_item.." 1"):get_definition().description
 	if active then
 		timer:start(interval)
-		meta:set_string("infotext", "Active\n\nPunch to eject cobblestone now")
+		meta:set_string("infotext", string_format("Active\n\nPunch to eject %s now", output_item_description))
 	else
-		meta:set_string("infotext", "Inactive\n\nPunch to eject cobblestone and restart")
+		meta:set_string("infotext", string_format("Inactive\n\nPunch to eject %s and restart", output_item_description))
 	end
 end
 
@@ -101,15 +105,15 @@ for i = 1,6 do
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
 			local stack = inv:get_stack("main", 1)
-			if stack:get_count() + output[i] > stack:get_stack_max() then
+			if stack:get_count() + output_quantity[i] > stack:get_stack_max() then
 				if not flush(inv, stack, pos, {x=pos.x, y=pos.y+1, z=pos.z}, "U", 1) then
 					flush(inv, stack, pos, {x=pos.x, y=pos.y-1, z=pos.z}, "D", -1)
 				end
 			end
-			local leftovers = inv:add_item("main", ItemStack("default:cobble "..output[i]))
+			local leftovers = inv:add_item("main", ItemStack(output_item.." "..output_quantity[i]))
 			if not leftovers:is_empty() then
 				set_state(pos, meta, nil, false)
-				return false -- full, stop producing cobble
+				return false -- full, stop production
 			end
 			return true
 		end,
@@ -175,7 +179,7 @@ for i = 1,6 do
 			return 1
 		end,
 		node_io_get_item_name = function(pos, node, side, index)
-			return "default:cobble"
+			return output_item
 		end,
 		node_io_get_item_stack = function(pos, node, side, index)
 			local meta = minetest.get_meta(pos)
@@ -213,7 +217,7 @@ for i = 1,6 do
 			effector = {
 				rules = mesecon_rules,
 				action_on = function (pos, node)
-					-- stop producing cobble
+					-- stop production
 					local timer = minetest.get_node_timer(pos)
 					timer:stop()
 					set_state(pos, minetest.get_meta(pos), nil, false)
