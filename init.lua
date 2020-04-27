@@ -248,16 +248,14 @@ for i = 1,6 do
 		-- upgrade
 		minetest.register_craft({
 			output = node_name.." 1",
-			recipe = {
-				{lesser_node_name, lesser_node_name},
-			}
+			type = "shapeless",
+			recipe = {lesser_node_name, lesser_node_name}
 		})
 		-- downgrade
 		minetest.register_craft({
 			output = lesser_node_name.." 2",
-			recipe = {
-				{node_name},
-			}
+			type = "shapeless",
+			recipe = {node_name}
 		})
 	end
 end
